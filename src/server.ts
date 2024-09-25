@@ -1,6 +1,9 @@
 import express from "express";
 import cron from "node-cron";
-import { connectToDatabase } from "./database/dbConnect";
+import {
+  closeDatabaseConnection,
+  connectToDatabase,
+} from "./database/dbConnect";
 import { port } from "./config";
 import { setupRoutes } from "./routes";
 import { sendTweet } from "./services/tweetService";
@@ -17,11 +20,12 @@ app.listen(port, async () => {
   );
 
   // Start cron job
-  cron.schedule("*/1 * * * *", sendTweet);
+  //cron.schedule("*/1 * * * *", sendTweet);
 });
 
 // Graceful shutdown
 process.on("SIGINT", async () => {
   console.log("Shutting down gracefully...");
+  await closeDatabaseConnection();
   process.exit(0);
 });

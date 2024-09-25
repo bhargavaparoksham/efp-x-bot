@@ -1,4 +1,4 @@
-import { getNextTweet } from "../database";
+import { getNextTweet } from "../database/dbFunctions";
 import { userClient } from "./twitterClient";
 
 export async function sendTweet(): Promise<void> {

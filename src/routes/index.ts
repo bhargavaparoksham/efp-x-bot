@@ -1,7 +1,12 @@
 import { Express, Request, Response } from "express";
 import { appClient, authLink, setUserClient } from "../services/twitterClient";
-import { storeOAuthData, storeTweets } from "../database";
+import {
+  batchFetchAndStoreEFPData,
+  storeOAuthData,
+  storeTweets,
+} from "../database/dbFunctions";
 import { authMiddleware } from "../middleware/auth";
+import { preloadedAccounts } from "../common/preloadedAccounts";
 
 export function setupRoutes(app: Express): void {
   app.get("/", (req: Request, res: Response) => {
@@ -65,6 +70,15 @@ export function setupRoutes(app: Express): void {
 
       await storeTweets(tweets);
       res.send("Tweets added successfully!");
+    }
+  );
+
+  app.get(
+    "/add-tracked-accounts",
+    authMiddleware,
+    async (req: Request, res: Response) => {
+      await batchFetchAndStoreEFPData(preloadedAccounts);
+      res.send("Tracked accounts added successfully!");
     }
   );
 }
