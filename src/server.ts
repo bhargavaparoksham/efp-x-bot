@@ -6,7 +6,9 @@ import {
 } from "./database/dbConnect";
 import { port } from "./config";
 import { setupRoutes } from "./routes";
-import { sendTweet } from "./services/tweetService";
+import { sendTweet, sendTweets } from "./services/tweetService";
+import { preloadedAccounts } from "./common/preloadedAccounts";
+import { batchFetchAndStoreEFPData } from "./services/efpDataService";
 
 const app = express();
 
@@ -20,7 +22,10 @@ app.listen(port, async () => {
   );
 
   // Start cron job
-  //cron.schedule("*/1 * * * *", sendTweet);
+  cron.schedule("0 */3 * * *", async () => {
+    await batchFetchAndStoreEFPData(preloadedAccounts);
+  });
+  cron.schedule("0 */6 * * *", sendTweets);
 });
 
 // Graceful shutdown
